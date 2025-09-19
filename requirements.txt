@@ -3,7 +3,7 @@ gunicorn==22.0.0
 chromadb==0.5.3
 google-cloud-aiplatform==1.56.0
 google-cloud-secret-manager==2.20.0
-google-cloud-sql-connector==2.2.0
+cloud-sql-python-connector[pymysql]==1.18.3
 sqlalchemy==2.0.35
 pymysql==1.1.1
 langchain==0.3.1
