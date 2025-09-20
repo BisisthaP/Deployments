@@ -12,18 +12,18 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install ChromaDB dependencies
-RUN pip install --no-cache-dir chromadb[all]
-
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install chromadb with minimal dependencies for Cloud Run
+RUN pip install --no-cache-dir chromadb==0.4.18
 
 # Copy application code
 COPY app.py .
 
 # Create ChromaDB data directory
-RUN mkdir -p /tmp/chroma
+RUN mkdir -p /tmp/chroma && chmod 755 /tmp/chroma
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash appuser && \
@@ -38,4 +38,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
 # Run the application with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "--timeout", "120", "--log-level", "info", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "120", "--log-level", "info", "app:app"]
